@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Responses
+﻿namespace Draft.Responses
 {
     /// <summary>
     ///     Provides global information about the etcd cluster that serviced a request

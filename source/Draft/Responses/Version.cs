@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses
@@ -9,10 +7,10 @@ namespace Draft.Responses
     {
 
         [DataMember(Name = "internalVersion")]
-        public string InternalVersion { get; private set; }
+        public string InternalVersion { get; private set; } = string.Empty;
 
         [DataMember(Name = "releaseVersion")]
-        public string ReleaseVersion { get; private set; }
+        public string ReleaseVersion { get; private set; } = string.Empty;
 
     }
 }

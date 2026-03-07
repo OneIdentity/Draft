@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Threading.Tasks;
 using Draft.Exceptions;
 using Draft.Responses;
 
 using Flurl.Http;
+using KeyNotFoundException = Draft.Exceptions.KeyNotFoundException;
 
 // ReSharper disable once CheckNamespace
 
@@ -20,12 +20,12 @@ namespace Draft
         {
             if (This == null || This.Call == null || This.Call.Response == null) { return null; }
 
-            return This.Call.Response.StatusCode.Map();
+            return This.Call.HttpResponseMessage.StatusCode.Map();
         }
 
         #endregion
 
-        public static EtcdException ProcessException(this FlurlHttpException This)
+        public static async Task<EtcdException> ProcessException(this FlurlHttpException This)
         {
             if (This.IsTimeoutException()) { return This.AsTimeoutException(); }
             if (This.IsInvalidHostException()) { return This.AsInvalidHostException(); }
@@ -34,7 +34,7 @@ namespace Draft
             if (This.IsServiceUnavailableException()) { return This.AsServiceUnavailableException(); }
             if (This.IsHttpConnectionException()) { return This.AsHttpConnectionException(); }
 
-            var etcdError = This.GetResponseJson<EtcdError>();
+            var etcdError = await This.GetResponseJsonAsync<EtcdError>();
 
             if (etcdError == null) { return new UnknownErrorException(This.Message); }
 
@@ -142,9 +142,9 @@ namespace Draft
             exception.EtcdError = etcdError;
             if (This.Call != null)
             {
-                exception.HttpStatusCode = This.Call.HttpStatus;
-                exception.RequestUrl = This.Call.Request.RequestUri.ToString();
-                exception.RequestMethod = This.Call.Request.Method;
+                exception.HttpStatusCode = (HttpStatusCode)This.Call.Response.StatusCode;
+                exception.RequestUrl = This.Call.HttpRequestMessage.RequestUri?.ToString() ?? string.Empty;
+                exception.RequestMethod = This.Call.HttpRequestMessage.Method;
             }
 
             return exception;
@@ -159,9 +159,8 @@ namespace Draft
 
         private static bool IsBadRequestException(this FlurlHttpException This)
         {
-            return This.Call.HttpStatus.HasValue
-                   && This.Call.HttpStatus.Value == HttpStatusCode.BadRequest
-                   && !This.Call.Response.IsJsonContentType();
+            return This.Call.Response.StatusCode == (int)HttpStatusCode.BadRequest
+                   && !This.Call.HttpResponseMessage.IsJsonContentType();
         }
 
         #endregion
@@ -185,7 +184,6 @@ namespace Draft
 
             return This.Call != null
                    && !This.Call.Completed
-                   && !This.Call.HttpStatus.HasValue
                    && webex != null
                    && (
                        webex.Status == WebExceptionStatus.ConnectionClosed
@@ -224,9 +222,8 @@ namespace Draft
 
         private static bool IsInvalidRequestException(this FlurlHttpException This)
         {
-            return This.Call.HttpStatus.HasValue
-                   && This.Call.HttpStatus.Value == HttpStatusCode.NotFound
-                   && !This.Call.Response.IsJsonContentType();
+            return This.Call.Response.StatusCode == (int)HttpStatusCode.NotFound
+                   && !This.Call.HttpResponseMessage.IsJsonContentType();
         }
 
         #endregion
@@ -240,8 +237,7 @@ namespace Draft
 
         private static bool IsServiceUnavailableException(this FlurlHttpException This)
         {
-            return This.Call.HttpStatus.HasValue
-                   && This.Call.HttpStatus.Value == HttpStatusCode.ServiceUnavailable;
+            return This.Call.Response.StatusCode == (int)HttpStatusCode.ServiceUnavailable;
         }
 
         #endregion

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Responses;
+﻿using Draft.Responses;
 
 namespace Draft
 {
-
     /// <summary>
     ///     Converts an <see cref="IKeyData" />'s <code>Value</code> to and from a string.
     /// </summary>

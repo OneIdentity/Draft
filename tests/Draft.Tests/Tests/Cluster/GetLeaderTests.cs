@@ -1,18 +1,8 @@
-﻿using System;
-
-using FluentAssertions;
-
-using Flurl;
-
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-
+﻿using System.Net;
 using Draft.Exceptions;
-
+using FluentAssertions;
+using Flurl;
 using Flurl.Http.Testing;
-
 using Xunit;
 
 namespace Draft.Tests.Cluster
@@ -25,7 +15,7 @@ namespace Draft.Tests.Cluster
         {
             using (var http = new HttpTest())
             {
-                http.RespondWithJson(Fixtures.Cluster.ClusterMemberResponse(new[] {Fixtures.EtcdUrl.ToUri()}, new[] {Fixtures.EtcdUrl.ToUri()}));
+                http.RespondWithJson(Fixtures.Cluster.ClusterMemberResponse(new[] { Fixtures.EtcdUrl.ToUri() }, new[] { Fixtures.EtcdUrl.ToUri() }));
 
                 var leader = await Etcd.ClientFor(Fixtures.EtcdUrl.ToUri())
                                        .Cluster
@@ -54,7 +44,7 @@ namespace Draft.Tests.Cluster
         }
 
         [Fact]
-        public void ShouldThrowServiceUnavailableExceptionOn503ResponseCode()
+        public async Task ShouldThrowServiceUnavailableExceptionOn503ResponseCode()
         {
             using (var http = new HttpTest())
             {
@@ -67,8 +57,8 @@ namespace Draft.Tests.Cluster
                               .GetLeader();
                 };
 
-                action.ShouldThrowExactly<ServiceUnavailableException>()
-                      .And
+                var exception = await Record.ExceptionAsync(action);
+                Assert.IsType<ServiceUnavailableException>(exception)
                       .IsServiceUnavailable.Should().BeTrue();
             }
         }

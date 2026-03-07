@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Configuration;
+﻿using Draft.Configuration;
 using Draft.Requests;
 
 namespace Draft

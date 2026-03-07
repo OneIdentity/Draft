@@ -1,18 +1,12 @@
-﻿using System;
-
-using FluentAssertions;
-
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
+﻿using System.Net;
+using System.Net.Sockets;
 using Draft.Exceptions;
 using Draft.Responses;
-
+using FluentAssertions;
 using Flurl.Http;
 using Flurl.Http.Testing;
-
 using Xunit;
+using KeyNotFoundException = Draft.Exceptions.KeyNotFoundException;
 
 namespace Draft.Tests.Exceptions
 {
@@ -20,66 +14,56 @@ namespace Draft.Tests.Exceptions
     {
         private static readonly Func<Task<IEtcdVersion>> CallFixture = async () => await Etcd.ClientFor(Fixtures.EtcdUrl.ToUri()).GetVersion();
 
-        private static HttpTest NewErrorCodeFixture(int? etcdErrorCode = null, HttpStatusCode status = HttpStatusCode.BadRequest)
+        private static HttpTestSetup NewErrorCodeFixture(HttpTest httpTest, int? etcdErrorCode = null, HttpStatusCode status = HttpStatusCode.BadRequest)
         {
-            return new HttpTest()
+            return httpTest
                 .RespondWithJson(status, Fixtures.CreateErrorMessage(etcdErrorCode));
         }
 
         [Fact]
-        public void ShouldParseErrorCodeFromHttpStatusIfMissingFromBody()
+        public async Task ShouldParseErrorCodeFromHttpStatusIfMissingFromBody()
         {
-            using (NewErrorCodeFixture(status : HttpStatusCode.Conflict))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<ExistingPeerAddressException>();
+                NewErrorCodeFixture(http, status: HttpStatusCode.Conflict);
+
+                await Assert.ThrowsAsync<ExistingPeerAddressException>(CallFixture);
             }
         }
 
         [Fact]
-        public void ShouldParseErrorCodeFromMessageBody()
+        public async Task ShouldParseErrorCodeFromMessageBody()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_Unknown))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<UnknownErrorException>();
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_Unknown);
+
+                await Assert.ThrowsAsync<UnknownErrorException>(CallFixture);
             }
         }
 
         [Fact]
-        public void ShouldThrowEtcdTimeoutException()
+        public async Task ShouldThrowEtcdTimeoutException()
         {
             using (var http = new HttpTest())
             {
                 http.SimulateTimeout();
 
-                CallFixture.ShouldThrow<EtcdTimeoutException>()
-                    .And
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<EtcdTimeoutException>(exception)
                     .IsTimeout.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowInvalidHostException()
-        {
-            using (new HttpTest())
-            {
-                FlurlHttp.Configure(
-                    x => { x.HttpClientFactory = new TestingHttpClientFactory(); });
-
-                CallFixture.ShouldThrow<InvalidHostException>()
-                    .And
-                    .IsInvalidHost.Should().BeTrue();
-            }
-        }
-
-        [Fact]
-        public void ShouldThrowInvalidRequestException()
+        public async Task ShouldThrowInvalidRequestException()
         {
             using (var http = new HttpTest())
             {
                 http.RespondWith(HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString());
 
-                CallFixture.ShouldThrow<InvalidRequestException>()
-                    .And
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<InvalidRequestException>(exception)
                     .IsInvalidRequest.Should().BeTrue();
             }
         }
@@ -87,345 +71,391 @@ namespace Draft.Tests.Exceptions
         #region Exception Type Tests
 
         [Fact]
-        public void ShouldThrowClientInternalException()
+        public async Task ShouldThrowClientInternalException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_ClientInternal))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<ClientInternalException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_ClientInternal);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<ClientInternalException>(exception)
                     .IsClientInternal.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowDirectoryNotEmptyException()
+        public async Task ShouldThrowDirectoryNotEmptyException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_DirectoryNotEmpty))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<DirectoryNotEmptyException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_DirectoryNotEmpty);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<DirectoryNotEmptyException>(exception)
                     .IsDirectoryNotEmpty.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowEventIndexClearedException()
+        public async Task ShouldThrowEventIndexClearedException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_EventIndexCleared))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<EventIndexClearedException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_EventIndexCleared);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<EventIndexClearedException>(exception)
                     .IsEventIndexCleared.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowExistingPeerAddressException()
+        public async Task ShouldThrowExistingPeerAddressException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_ExistingPeerAddress))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<ExistingPeerAddressException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_ExistingPeerAddress);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<ExistingPeerAddressException>(exception)
                     .IsExistingPeerAddress.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowHttpConnectionException()
+        public async Task ShouldThrowIndexNotANumberException()
         {
-            using (new HttpTest())
+            using (var http = new HttpTest())
             {
-                FlurlHttp.Configure(
-                    x => { x.HttpClientFactory = new TestingHttpClientFactory( /*new HttpTest(), */(ht, hrm) => { throw new WebException("The Message", WebExceptionStatus.ConnectFailure); }); });
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_IndexNotANumber);
 
-                CallFixture.ShouldThrow<HttpConnectionException>()
-                    .And
-                    .IsHttpConnection.Should().BeTrue();
-            }
-        }
-
-        [Fact]
-        public void ShouldThrowIndexNotANumberException()
-        {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_IndexNotANumber))
-            {
-                CallFixture.ShouldThrow<IndexNotANumberException>()
-                    .And
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<IndexNotANumberException>(exception)
                     .IsIndexNotANumber.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowIndexOrValueRequiredException()
+        public async Task ShouldThrowIndexOrValueRequiredException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_IndexOrValueRequired))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<IndexOrValueRequiredException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_IndexOrValueRequired);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<IndexOrValueRequiredException>(exception)
                     .IsIndexOrValueRequired.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowIndexValueMutexException()
+        public async Task ShouldThrowIndexValueMutexException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_IndexValueMutex))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<IndexValueMutexException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_IndexValueMutex);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<IndexValueMutexException>(exception)
                     .IsIndexValueMutex.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowInvalidActiveSizeException()
+        public async Task ShouldThrowInvalidActiveSizeException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_InvalidActiveSize))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<InvalidActiveSizeException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_InvalidActiveSize);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<InvalidActiveSizeException>(exception)
                     .IsInvalidActiveSize.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowInvalidFieldException()
+        public async Task ShouldThrowInvalidFieldException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_InvalidField))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<InvalidFieldException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_InvalidField);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<InvalidFieldException>(exception)
                     .IsInvalidField.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowInvalidFormException()
+        public async Task ShouldThrowInvalidFormException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_InvalidForm))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<InvalidFormException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_InvalidForm);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<InvalidFormException>(exception)
                     .IsInvalidForm.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowInvalidRemoveDelayException()
+        public async Task ShouldThrowInvalidRemoveDelayException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_InvalidRemoveDelay))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<InvalidRemoveDelayException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_InvalidRemoveDelay);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<InvalidRemoveDelayException>(exception)
                     .IsInvalidRemoveDelay.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowKeyIsPreservedException()
+        public async Task ShouldThrowKeyIsPreservedException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_KeyIsPreserved))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<KeyIsPreservedException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_KeyIsPreserved);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<KeyIsPreservedException>(exception)
                     .IsKeyIsPreserved.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowKeyNotFoundException()
+        public async Task ShouldThrowKeyNotFoundException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_KeyNotFound))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<KeyNotFoundException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_KeyNotFound);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<KeyNotFoundException>(exception)
                     .IsKeyNotFound.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowLeaderElectException()
+        public async Task ShouldThrowLeaderElectException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_LeaderElect))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<LeaderElectException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_LeaderElect);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<LeaderElectException>(exception)
                     .IsLeaderElect.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowNameRequiredException()
+        public async Task ShouldThrowNameRequiredException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_NameRequired))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<NameRequiredException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_NameRequired);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<NameRequiredException>(exception)
                     .IsNameRequired.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowNodeExistsException()
+        public async Task ShouldThrowNodeExistsException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_NodeExists))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<NodeExistsException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_NodeExists);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<NodeExistsException>(exception)
                     .IsNodeExists.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowNoMorePeerException()
+        public async Task ShouldThrowNoMorePeerException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_NoMorePeer))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<NoMorePeerException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_NoMorePeer);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<NoMorePeerException>(exception)
                     .IsNoMorePeer.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowNotADirectoryException()
+        public async Task ShouldThrowNotADirectoryException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_NotDirectory))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<NotADirectoryException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_NotDirectory);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<NotADirectoryException>(exception)
                     .IsNotDirectory.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowNotAFileException()
+        public async Task ShouldThrowNotAFileException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_NotFile))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<NotAFileException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_NotFile);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<NotAFileException>(exception)
                     .IsNotFile.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowPreviousValueRequiredException()
+        public async Task ShouldThrowPreviousValueRequiredException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_PreviousValueRequired))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<PreviousValueRequiredException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_PreviousValueRequired);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<PreviousValueRequiredException>(exception)
                     .IsPreviousValueRequired.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowRaftInternalException()
+        public async Task ShouldThrowRaftInternalException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_RaftInternal))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<RaftInternalException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_RaftInternal);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<RaftInternalException>(exception)
                     .IsRaftInternal.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowRootIsReadOnlyException()
+        public async Task ShouldThrowRootIsReadOnlyException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_RootReadOnly))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<RootIsReadOnlyException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_RootReadOnly);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<RootIsReadOnlyException>(exception)
                     .IsRootReadOnly.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowStandbyInternalException()
+        public async Task ShouldThrowStandbyInternalException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_StandbyInternal))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<StandbyInternalException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_StandbyInternal);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<StandbyInternalException>(exception)
                     .IsStandbyInternal.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowTestFailedException()
+        public async Task ShouldThrowTestFailedException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_TestFailed))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<TestFailedException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_TestFailed);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<TestFailedException>(exception)
                     .IsTestFailed.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowTimeoutNotANumberException()
+        public async Task ShouldThrowTimeoutNotANumberException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_TimeoutNotANumber))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<TimeoutNotANumberException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_TimeoutNotANumber);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<TimeoutNotANumberException>(exception)
                     .IsTimeoutNotANumber.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowTtlNotANumberException()
+        public async Task ShouldThrowTtlNotANumberException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_TtlNotANumber))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<TtlNotANumberException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_TtlNotANumber);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<TtlNotANumberException>(exception)
                     .IsTtlNotANumber.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowUnknownErrorException()
+        public async Task ShouldThrowUnknownErrorException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_Unknown))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<UnknownErrorException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_Unknown);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<UnknownErrorException>(exception)
                     .IsUnknown.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowValueOrTtlRequiredException()
+        public async Task ShouldThrowValueOrTtlRequiredException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_ValueOrTtlRequired))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<ValueOrTtlRequiredException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_ValueOrTtlRequired);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<ValueOrTtlRequiredException>(exception)
                     .IsValueOrTtlRequired.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowValueRequiredException()
+        public async Task ShouldThrowValueRequiredException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_ValueRequired))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<ValueRequiredException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_ValueRequired);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<ValueRequiredException>(exception)
                     .IsValueRequired.Should().BeTrue();
             }
         }
 
         [Fact]
-        public void ShouldThrowWatcherClearedException()
+        public async Task ShouldThrowWatcherClearedException()
         {
-            using (NewErrorCodeFixture(Constants.Etcd.ErrorCode_WatcherCleared))
+            using (var http = new HttpTest())
             {
-                CallFixture.ShouldThrow<WatcherClearedException>()
-                    .And
+                NewErrorCodeFixture(http, Constants.Etcd.ErrorCode_WatcherCleared);
+
+                var exception = await Record.ExceptionAsync(CallFixture);
+                Assert.IsType<WatcherClearedException>(exception)
                     .IsWatcherCleared.Should().BeTrue();
             }
         }

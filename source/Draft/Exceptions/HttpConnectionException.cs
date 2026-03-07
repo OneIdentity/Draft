@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace Draft.Exceptions
 {
@@ -15,26 +13,22 @@ namespace Draft.Exceptions
         /// <summary>
         ///     Initializes a new <see cref="HttpConnectionException" /> instance.
         /// </summary>
-        public HttpConnectionException() {}
+        public HttpConnectionException() { }
 
         /// <summary>
         ///     Initializes a new <see cref="HttpConnectionException" /> instance with a specified error message.
         /// </summary>
-        public HttpConnectionException(string message) : base(message) {}
-        
+        public HttpConnectionException(string message) : base(message) { }
+
         /// <summary>
         ///     Initializes a new <see cref="HttpConnectionException" /> instance for use in BCL deserialization
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        protected HttpConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected HttpConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         /// <summary>
         ///     Indicates that this exception is due to an underlying http client connection error.
         /// </summary>
-        public override bool IsHttpConnection
-        {
-            get { return true; }
-        }
+        public override bool IsHttpConnection => true;
 
     }
 }

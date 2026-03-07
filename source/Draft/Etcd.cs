@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 
 using Draft.Configuration;
@@ -10,9 +11,11 @@ using Draft.Endpoints;
 using Draft.Json;
 
 using Flurl.Http;
-
+using Flurl.Http.Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+
+[assembly: InternalsVisibleTo("Draft.Tests")]
 
 namespace Draft
 {
@@ -36,32 +39,23 @@ namespace Draft
             JsonSettings.Converters = JsonSettings.Converters ?? new List<JsonConverter>();
             JsonSettings.Converters.Add(new EtcdErrorCodeConverter());
             JsonSettings.Converters.Add(new StringEnumConverter { AllowIntegerValues = true });
-
-
-            FlurlHttp.Configure(
-                c =>
-                {
-                    c.BeforeCall = http =>
-                    {
-                        if (http.Request.IsJsonContentType())
-                        {
-                            // This needs to be explicitly set because etcd complains if the
-                            // content-type has a charset value appended
-                            http.Request.Content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(Constants.Http.ContentType_ApplicationJson);
-                        }
-                    };
-                });
-
             JsonConvert.DefaultSettings = () => JsonSettings;
+
+            FlurlHttp.Clients.WithDefaults(builder =>
+            {
+                builder.EventHandlers.Add((FlurlEventType.BeforeCall, new EtcdHeaderEventHandler()));
+                builder.WithSettings(settings =>
+                    {
+                        settings.JsonSerializer = new NewtonsoftJsonSerializer(JsonSettings);
+                    });
+
+            });
         }
 
         /// <summary>
         ///     <see cref="IEtcdClient" />'s global configuration options.
         /// </summary>
-        public static IEtcdClientConfig Configuration
-        {
-            get { return ClientConfig.Value; }
-        }
+        public static IEtcdClientConfig Configuration => ClientConfig.Value;
 
         /// <summary>
         ///     Creates an <see cref="IEtcdClient" /> for the specified <see cref="EndpointPool" />.
@@ -101,7 +95,7 @@ namespace Draft
             {
                 ExceptionDispatchInfo.Capture(ae.Flatten().InnerExceptions.First()).Throw();
             }
-            
+
 
             return ClientFor(endpointPool);
         }
@@ -120,5 +114,17 @@ namespace Draft
             }
         }
 
+        private class EtcdHeaderEventHandler : FlurlEventHandler
+        {
+            public override void Handle(FlurlEventType eventType, FlurlCall call)
+            {
+                if (call.HttpRequestMessage.IsJsonContentType())
+                {
+                    // This needs to be explicitly set because etcd complains if the
+                    // content-type has a charset value appended
+                    call.HttpRequestMessage.Content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(Constants.Http.ContentType_ApplicationJson);
+                }
+            }
+        }
     }
 }

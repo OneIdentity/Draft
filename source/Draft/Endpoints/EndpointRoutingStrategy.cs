@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Endpoints
@@ -12,10 +11,7 @@ namespace Draft.Endpoints
     {
 
         [IgnoreDataMember]
-        internal static EndpointRoutingStrategy Default
-        {
-            get { return First; }
-        }
+        internal static EndpointRoutingStrategy Default => First;
 
         /// <summary>
         ///     Executes the strategy against the passed <paramref name="key" /> and <paramref name="endpoints" />.
@@ -40,28 +36,19 @@ namespace Draft.Endpoints
         ///     Uses the first <see cref="Endpoint" />.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointRoutingStrategy First
-        {
-            get { return LazyFirst.Value; }
-        }
+        public static EndpointRoutingStrategy First => LazyFirst.Value;
 
         /// <summary>
         ///     Uses a randomly selected <see cref="Endpoint" />.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointRoutingStrategy Random
-        {
-            get { return LazyRandom.Value; }
-        }
+        public static EndpointRoutingStrategy Random => LazyRandom.Value;
 
         /// <summary>
         ///     Uses a round-robin patter for selecting the <see cref="Endpoint" />.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointRoutingStrategy RoundRobin
-        {
-            get { return LazyRoundRobin.Value; }
-        }
+        public static EndpointRoutingStrategy RoundRobin => LazyRoundRobin.Value;
 
         #endregion
     }

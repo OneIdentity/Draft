@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using FluentAssertions;
 
@@ -114,7 +110,7 @@ namespace Draft.Tests.Keys
         }
 
         [Fact]
-        public void WatchOnce_ShouldOnlyBeNotifiedOnce()
+        public async Task WatchOnce_ShouldOnlyBeNotifiedOnce()
         {
             using (var http = new HttpTest())
             {
@@ -127,7 +123,7 @@ namespace Draft.Tests.Keys
                     .WatchOnce(Fixtures.Watch.Path)
                     .Subscribe(tcs.SetResult, tcs.SetException);
 
-                tcs.Task.Wait();
+                var result = await tcs.Task;
 
                 http.Should()
                     .HaveCalled(
@@ -142,8 +138,7 @@ namespace Draft.Tests.Keys
                 http.CallLog.Should()
                     .HaveCount(1);
 
-                tcs.Task.IsCompleted.Should().BeTrue();
-                tcs.Task.Result.Should().NotBeNull();
+                result.Should().NotBeNull();
             }
         }
 

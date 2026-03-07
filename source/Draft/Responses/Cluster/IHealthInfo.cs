@@ -5,7 +5,7 @@
     /// </summary>
     public interface IHealthInfo
     {
-        
+
         /// <summary>
         ///     Health status value
         /// </summary>

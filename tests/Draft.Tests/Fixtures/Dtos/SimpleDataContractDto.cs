@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Draft.Tests
 {
@@ -12,7 +10,7 @@ namespace Draft.Tests
         public int Id { get; set; }
 
         [DataMember(Name = "NAME")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
     }
 }

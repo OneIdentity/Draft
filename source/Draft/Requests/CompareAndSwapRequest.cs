@@ -1,14 +1,9 @@
-﻿using System;
-
-using Flurl.Http;
-
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Draft.Endpoints;
 using Draft.Responses;
+using Flurl.Http;
 
 namespace Draft.Requests
 {
@@ -16,15 +11,15 @@ namespace Draft.Requests
     {
 
         public CompareAndSwapRequest(IEtcdClient etcdClient, EndpointPool endpointPool, params string[] pathParts)
-            : base(etcdClient, endpointPool, pathParts) {}
+            : base(etcdClient, endpointPool, pathParts) { }
 
-        public long ExpectedIndex { get; private set; }
+        public long ExpectedIndex { get; private set; } = default;
 
-        public string ExpectedValue { get; private set; }
+        public string ExpectedValue { get; private set; } = string.Empty;
 
         public long? Ttl { get; private set; }
 
-        public string Value { get; private set; }
+        public string Value { get; private set; } = string.Empty;
 
         Task<IKeyEvent> ICompareAndSwapByIndexRequest.Execute()
         {
@@ -92,7 +87,7 @@ namespace Draft.Requests
 
             try
             {
-                return await TargetUrl
+                return await new FlurlRequest(TargetUrl)
                     .Conditionally(isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevValue, ExpectedValue))
                     .Conditionally(!isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevIndex, ExpectedIndex))
                     .SendUrlEncodedAsync(HttpMethod.Put, values)
@@ -100,7 +95,7 @@ namespace Draft.Requests
             }
             catch (FlurlHttpException e)
             {
-                throw e.ProcessException();
+                throw await e.ProcessException();
             }
         }
 

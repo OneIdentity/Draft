@@ -1,15 +1,6 @@
-﻿using System;
-
+﻿using FluentAssertions;
 using Flurl;
-
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using FluentAssertions;
-
 using Flurl.Http.Testing;
-
 using Xunit;
 
 namespace Draft.Tests.Cluster
@@ -24,7 +15,7 @@ namespace Draft.Tests.Cluster
             {
                 http.RespondWithJson(
                     Fixtures.Cluster.ClusterMemberResponse(
-                        peerUris : new[]
+                        peerUris: new[]
                         {
                             Fixtures.EtcdUrl.ToUri(),
                             Fixtures.EtcdUrl.ToUri()

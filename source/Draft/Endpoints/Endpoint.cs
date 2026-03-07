@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Endpoints
@@ -16,7 +15,7 @@ namespace Draft.Endpoints
         ///     <see cref="Uri" />.
         /// </summary>
         public Endpoint()
-            : this(default(Uri), default(EndpointAvailability)) {}
+            : this(new Uri(string.Empty), default) { }
 
         /// <summary>
         ///     Initializes a new <see cref="Endpoint" /> class with the specified <paramref name="availability" /> and
@@ -40,10 +39,7 @@ namespace Draft.Endpoints
         ///     Is <c>true</c> when <see cref="Availability" /><c> == </c><see cref="EndpointAvailability.Online" />.
         /// </summary>
         [IgnoreDataMember]
-        public bool IsOnline
-        {
-            get { return Availability == EndpointAvailability.Online; }
-        }
+        public bool IsOnline => Availability == EndpointAvailability.Online;
 
         /// <summary>
         ///     <see cref="Uri" /> value of this etcd endpoint.
@@ -88,7 +84,7 @@ namespace Draft.Endpoints
         {
             if (ReferenceEquals(null, obj)) { return false; }
             if (ReferenceEquals(this, obj)) { return true; }
-            return obj is Endpoint && Equals((Endpoint) obj);
+            return obj is Endpoint && Equals((Endpoint)obj);
         }
 
         /// <summary>

@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Reactive.Linq;
-
-using Flurl.Http;
-
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Draft.Endpoints;
 using Draft.Responses;
+using Flurl.Http;
 
 namespace Draft.Requests
 {
@@ -39,10 +34,7 @@ namespace Draft.Requests
 
         public bool Single { get; private set; }
 
-        public IEtcdClient EtcdClient
-        {
-            get { return _etcdClient; }
-        }
+        public IEtcdClient EtcdClient => _etcdClient;
 
         public IWatchRequest WithModifiedIndex(long? index = null)
         {
@@ -56,10 +48,10 @@ namespace Draft.Requests
             return this;
         }
 
-        private Task<HttpResponseMessage> CallEndpoint(bool? recursive, long? index)
+        private Task<IFlurlResponse> CallEndpoint(bool? recursive, long? index)
         {
-            return EndpointPool.GetEndpointUrl(PathParts)
-                .SetQueryParam(Constants.Etcd.Parameter_Wait, Constants.Etcd.Parameter_True)
+            FlurlRequest flurlRequest = new FlurlRequest(EndpointPool.GetEndpointUrl(PathParts).SetQueryParam(Constants.Etcd.Parameter_Wait, Constants.Etcd.Parameter_True));
+            return flurlRequest
                 .Conditionally(recursive.HasValue && recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                 // ReSharper disable once PossibleInvalidOperationException
                 .Conditionally(index.HasValue, x => x.SetQueryParam(Constants.Etcd.Parameter_WaitIndex, index.Value))
@@ -100,7 +92,7 @@ namespace Draft.Requests
                 }
                 catch (FlurlHttpException e)
                 {
-                    var ex = e.ProcessException();
+                    var ex = await e.ProcessException();
                     if (modifiedIndex != null && ex.IsEventIndexCleared)
                     {
                         var idx = TryUpdateIndex(e);
@@ -137,17 +129,17 @@ namespace Draft.Requests
         {
             if (e == null) { return null; }
             if (e.Call == null) { return null; }
-            if (e.Call.HttpStatus != HttpStatusCode.BadRequest) { return null; }
+            if (e.Call.Response.StatusCode != (int)HttpStatusCode.BadRequest) { return null; }
             if (e.Call.Response == null) { return null; }
 
             return TryUpdateIndex(e.Call.Response);
         }
 
-        private static long? TryUpdateIndex(HttpResponseMessage response)
+        private static long? TryUpdateIndex(IFlurlResponse response)
         {
             return response == null
                 ? null
-                : response.TryGetHeaderAsLong(Constants.Etcd.Header_EtcdIndex);
+                : response.ResponseMessage.TryGetHeaderAsLong(Constants.Etcd.Header_EtcdIndex);
         }
 
     }

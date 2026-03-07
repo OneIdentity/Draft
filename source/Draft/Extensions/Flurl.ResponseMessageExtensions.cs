@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using Draft.Responses;
 using Flurl.Http;
-
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
-using Draft.Responses;
 
 namespace Draft
 {
@@ -25,7 +21,7 @@ namespace Draft
             };
         }
 
-        public static async Task<T> ReceiveEtcdResponse<T>(this Task<HttpResponseMessage> This, IEtcdClient etcdClient)
+        public static async Task<T> ReceiveEtcdResponse<T>(this Task<IFlurlResponse> This, IEtcdClient etcdClient)
             where T : IHaveResponseHeaders
         {
             var response = await This.ReceiveJson<T>();
@@ -35,7 +31,7 @@ namespace Draft
                 var vc = etcdClient.Config.ValueConverter;
                 vcResponse.ValueConverter = () => vc;
             }
-            var httpMessage = await This;
+            var httpMessage = (await This).ResponseMessage;
             response.Headers = httpMessage.ParseResponseHeaders();
             return response;
         }

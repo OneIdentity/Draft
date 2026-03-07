@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using FluentAssertions.Execution;
 
@@ -13,12 +10,12 @@ namespace Draft.Tests.Assertions
     public class HttpTestFluentAssertions : BaseFluentAssertions
     {
 
-        public HttpTestFluentAssertions(IList<HttpCall> calls) : base(calls) {}
+        public HttpTestFluentAssertions(IReadOnlyList<FlurlCall> calls) : base(calls) { }
 
         public HttpCallFluentAssertions HaveCalled(string urlPattern, string because = "", params object[] reasonArgs)
         {
-            var matchingCalls = FilterCalls(x => MatchesPattern(x.Request.RequestUri.AbsoluteUri, urlPattern));
-            Execute.Assertion
+            var matchingCalls = FilterCalls(x => MatchesPattern(x.HttpRequestMessage.RequestUri?.AbsoluteUri ?? string.Empty, urlPattern));
+            AssertionChain.GetOrCreate()
                 .ForCondition(matchingCalls.Any())
                 .BecauseOf(because, reasonArgs)
                 .FailWith("Expected {context:IEtcdClient} to have called {0}{reason}, but did not find any calls.", urlPattern);
@@ -28,8 +25,8 @@ namespace Draft.Tests.Assertions
 
         public HttpCallFluentAssertions NotHaveCalled(string urlPattern, string because = "", params object[] reasonArgs)
         {
-            var matchingCalls = FilterCalls(x => MatchesPattern(x.Request.RequestUri.AbsoluteUri, urlPattern));
-            Execute.Assertion
+            var matchingCalls = FilterCalls(x => MatchesPattern(x.HttpRequestMessage.RequestUri?.AbsoluteUri ?? string.Empty, urlPattern));
+            AssertionChain.GetOrCreate()
                 .ForCondition(!matchingCalls.Any())
                 .BecauseOf(because, reasonArgs)
                 .FailWith("Expected {context:IEtcdClient} to not have called {0}{reason}, but found {1} calls.", urlPattern, matchingCalls.Count);

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Responses;
+﻿using Draft.Responses;
+using System;
 
 namespace Draft.Requests
 {

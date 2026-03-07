@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Draft.Responses.Cluster;
 
 namespace Draft.Requests.Cluster

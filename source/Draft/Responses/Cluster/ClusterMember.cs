@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses.Cluster
@@ -8,11 +7,11 @@ namespace Draft.Responses.Cluster
     internal class ClusterMember : IClusterMember
     {
 
-        [field : IgnoreDataMember]
-        private Uri[] _clientUrls;
+        [field: IgnoreDataMember]
+        private Uri[] _clientUrls = Array.Empty<Uri>();
 
-        [field : IgnoreDataMember]
-        private Uri[] _peerUrls;
+        [field: IgnoreDataMember]
+        private Uri[] _peerUrls = Array.Empty<Uri>();
 
         [DataMember(Name = "clientURLs")]
         public Uri[] ClientUrls
@@ -22,10 +21,10 @@ namespace Draft.Responses.Cluster
         }
 
         [DataMember(Name = "id")]
-        public string Id { get; private set; }
+        public string Id { get; private set; } = string.Empty;
 
         [DataMember(Name = "name")]
-        public string Name { get; private set; }
+        public string Name { get; private set; } = string.Empty;
 
         [DataMember(Name = "peerURLs")]
         public Uri[] PeerUrls

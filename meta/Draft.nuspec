@@ -12,18 +12,18 @@
         <tags>etcd</tags>
         <copyright>Copyright 2015 Jordan S. Jones</copyright>
         <dependencies>
-            <group targetFramework="net45">
-                <dependency id="Flurl" version="2.4.0" />
-                <dependency id="Flurl.Http" version="1.2.0" />
-                <dependency id="Newtonsoft.Json" version="(10.0.3,)" />
-                <dependency id="Rx-Core" version="2.2.5" />
-                <dependency id="Rx-Interfaces" version="2.2.5" />
-                <dependency id="Rx-Linq" version="2.2.5" />
+			<group targetFramework="netstandard2.0">
+                <dependency id="Flurl" version="4.0.0" />
+                <dependency id="Flurl.Http" version="4.0.2" />
+				<dependency id="Flurl.Http.Newtonsoft" version="0.9.1" />
+                <dependency id="Newtonsoft.Json" version="(13.0.4,)" />
+                <dependency id="System.Reactive" version="6.1.0" />
+                <dependency id="System.Reactive.Linq" version="6.1.0" />
             </group>
         </dependencies>
     </metadata>
     <files>
-        <file src="source\Draft\bin\$configuration$\Net45\Draft.*" target="lib\net45" />
+        <file src="source\Draft\bin\$configuration$\netstandard2.0\Draft.*" target="lib\netstandard2.0" />
         <file src="LICENSE.txt" />
         <file src="README.md" />
         <file src="ReleaseNotes.md" />

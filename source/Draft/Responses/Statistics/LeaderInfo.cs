@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses.Statistics
@@ -15,7 +14,7 @@ namespace Draft.Responses.Statistics
         ///     Id of the current leader
         /// </summary>
         [DataMember(Name = "leader")]
-        public string Leader { get; set; }
+        public string Leader { get; set; } = string.Empty;
 
         /// <summary>
         ///     Time when the leader was started (if available)
@@ -27,7 +26,7 @@ namespace Draft.Responses.Statistics
         ///     String representation of the amount of time the leader has been leader
         /// </summary>
         [DataMember(Name = "uptime")]
-        public string Uptime { get; set; }
+        public string Uptime { get; set; } = string.Empty;
 
     }
 

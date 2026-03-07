@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Draft.Responses.Statistics
 {
@@ -11,27 +9,21 @@ namespace Draft.Responses.Statistics
     internal class FollowerStatistics : IFollowerStatistics
     {
 
-        IFollowerCounts IFollowerStatistics.Counts
-        {
-            get { return Counts; }
-        }
+        IFollowerCounts IFollowerStatistics.Counts => Counts;
 
         /// <summary>
         ///     Follower send counts
         /// </summary>
         [DataMember(Name = "counts")]
-        public FollowerCounts Counts { get; set; }
+        public FollowerCounts Counts { get; set; } = new FollowerCounts();
 
-        IFollowerLatency IFollowerStatistics.Latency
-        {
-            get { return Latency; }
-        }
+        IFollowerLatency IFollowerStatistics.Latency => Latency;
 
         /// <summary>
         ///     Follower latency statistics
         /// </summary>
         [DataMember(Name = "latency")]
-        public FollowerLatency Latency { get; set; }
+        public FollowerLatency Latency { get; set; } = new FollowerLatency();
 
     }
 

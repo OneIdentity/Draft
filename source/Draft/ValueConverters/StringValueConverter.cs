@@ -1,41 +1,40 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace Draft.ValueConverters
 {
     internal class StringValueConverter : IKeyDataValueConverter
     {
 
-        private static readonly Type StringType = typeof (string);
+        private static readonly Type StringType = typeof(string);
 
         public T Read<T>(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                return default(T);
+                return default;
             }
 
-            var tType = typeof (T);
+            var tType = typeof(T);
 
             if (tType.IsEnum)
             {
-                return (T) Enum.Parse(tType, value, true);
+                return (T)Enum.Parse(tType, value, true);
             }
 
             var converter = TypeDescriptor.GetConverter(StringType);
             if (converter.CanConvertTo(tType))
             {
-                return (T) converter.ConvertTo(value, tType);
+                return (T)converter.ConvertTo(value, tType);
             }
 
             converter = TypeDescriptor.GetConverter(tType);
             if (converter.CanConvertFrom(StringType))
             {
-                return (T) converter.ConvertFromString(value);
+                return (T)converter.ConvertFromString(value);
             }
 
-            return (T) Convert.ChangeType(value, tType);
+            return (T)Convert.ChangeType(value, tType);
         }
 
         public string Write<T>(T value)
@@ -44,23 +43,23 @@ namespace Draft.ValueConverters
 
             if (value is Enum)
             {
-                return Enum.GetName(value.GetType(), value);
+                return Enum.GetName(value.GetType(), value) ?? value.ToString() ?? string.Empty;
             }
 
-            var tType = typeof (T);
+            var tType = typeof(T);
             var converter = TypeDescriptor.GetConverter(tType);
             if (converter.CanConvertTo(StringType))
             {
-                return converter.ConvertToString(value);
+                return converter.ConvertToString(value) ?? string.Empty;
             }
 
             converter = TypeDescriptor.GetConverter(StringType);
             if (converter.CanConvertFrom(tType))
             {
-                return converter.ConvertToString(value);
+                return converter.ConvertToString(value) ?? string.Empty;
             }
 
-            return (string) Convert.ChangeType(value, StringType);
+            return (string)Convert.ChangeType(value, StringType);
         }
 
         public object ReadString(string value)

@@ -1,13 +1,8 @@
-﻿using System;
-
-using Flurl.Http;
-
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Draft.Endpoints;
 using Draft.Responses;
+using Flurl.Http;
 
 namespace Draft.Requests
 {
@@ -15,7 +10,7 @@ namespace Draft.Requests
     {
 
         public CompareAndDeleteRequest(IEtcdClient etcdClient, EndpointPool endpointPool, params string[] pathParts)
-            : base(etcdClient, endpointPool, pathParts) {}
+            : base(etcdClient, endpointPool, pathParts) { }
 
         public long ExpectedIndex { get; private set; }
 
@@ -57,7 +52,7 @@ namespace Draft.Requests
         {
             try
             {
-                return await TargetUrl
+                return await new FlurlRequest(TargetUrl)
                     .Conditionally(isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevValue, ExpectedValue))
                     .Conditionally(!isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevIndex, ExpectedIndex))
                     .DeleteAsync()
@@ -65,7 +60,7 @@ namespace Draft.Requests
             }
             catch (FlurlHttpException e)
             {
-                throw e.ProcessException();
+                throw await e.ProcessException();
             }
         }
 

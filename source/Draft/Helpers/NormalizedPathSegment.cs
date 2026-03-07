@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Flurl;
+using System;
 using System.Linq;
-
-using Flurl;
 
 namespace Draft
 {

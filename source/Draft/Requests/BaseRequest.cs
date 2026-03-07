@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Endpoints;
+﻿using Draft.Endpoints;
 
 using Flurl;
+using System;
 
 namespace Draft.Requests
 {
@@ -23,13 +21,7 @@ namespace Draft.Requests
 
         public IEtcdClient EtcdClient { get; private set; }
 
-        public Url TargetUrl
-        {
-            get
-            {
-                return _endpointPool.GetEndpointUrl(_pathParts);
-            }
-        }
+        public Url TargetUrl => _endpointPool.GetEndpointUrl(_pathParts);
 
         protected TimeSpan? EndpointPoolHttpTimeout => _endpointPool.HttpGetTimeout;
     }

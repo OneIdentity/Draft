@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Draft.Responses.Cluster
 {
@@ -8,7 +6,7 @@ namespace Draft.Responses.Cluster
     internal class HealthInfo : IHealthInfo
     {
         [DataMember(Name = "health")]
-        public bool Value { get; private set; } 
+        public bool Value { get; private set; }
 
     }
 }

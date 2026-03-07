@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Draft.Responses
 {
@@ -9,7 +7,7 @@ namespace Draft.Responses
     {
 
         [DataMember(Name = "cause")]
-        public string Cause { get; private set; }
+        public string Cause { get; private set; } = string.Empty;
 
         [DataMember(Name = "errorCode")]
         public EtcdErrorCode? ErrorCode { get; internal set; }
@@ -18,7 +16,7 @@ namespace Draft.Responses
         public long? Index { get; private set; }
 
         [DataMember(Name = "message")]
-        public string Message { get; private set; }
+        public string Message { get; private set; } = string.Empty;
 
     }
 }

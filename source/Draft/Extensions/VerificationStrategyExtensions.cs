@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Draft.Endpoints;
+﻿using Draft.Endpoints;
 using Draft.Responses.Cluster;
 
 using Flurl.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Draft
 {
@@ -32,7 +31,7 @@ namespace Draft
                 var response = await endpoint.ToUrl()
                                              .AppendPathSegment(Constants.Etcd.Path_Version)
                                              .GetAsync();
-                if (response != null && response.IsSuccessStatusCode)
+                if (response != null && response.ResponseMessage.IsSuccessStatusCode)
                 {
                     availablility = EndpointAvailability.Online;
                 }
@@ -67,7 +66,7 @@ namespace Draft
             }
             catch (FlurlHttpException e)
             {
-                throw e.ProcessException();
+                throw await e.ProcessException();
             }
         }
 

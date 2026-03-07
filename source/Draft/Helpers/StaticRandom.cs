@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 
 namespace Draft
@@ -19,10 +18,7 @@ namespace Draft
             _seed = Environment.TickCount;
         }
 
-        public static IRandom Instance
-        {
-            get { return ThreadLocalRandom.Value; }
-        }
+        public static IRandom Instance => ThreadLocalRandom.Value;
 
 
         private sealed class SystemRandom : IRandom

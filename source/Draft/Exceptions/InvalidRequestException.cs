@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace Draft.Exceptions
 {
@@ -15,26 +13,22 @@ namespace Draft.Exceptions
         /// <summary>
         ///     Initializes a new <see cref="InvalidRequestException" /> instance.
         /// </summary>
-        public InvalidRequestException() {}
+        public InvalidRequestException() { }
 
         /// <summary>
         ///     Initializes a new <see cref="InvalidRequestException" /> instance with a specified error message.
         /// </summary>
-        public InvalidRequestException(string message) : base(message) {}
-        
+        public InvalidRequestException(string message) : base(message) { }
+
         /// <summary>
         ///     Initializes a new <see cref="InvalidRequestException" /> instance for use in BCL deserialization
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        protected InvalidRequestException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected InvalidRequestException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         /// <summary>
         ///     Indicates that this exception is due to an invalid request error.
         /// </summary>
-        public override bool IsInvalidRequest
-        {
-            get { return true; }
-        }
+        public override bool IsInvalidRequest => true;
 
     }
 }

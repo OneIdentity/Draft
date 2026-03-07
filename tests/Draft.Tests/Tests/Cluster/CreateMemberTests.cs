@@ -1,18 +1,8 @@
-﻿using System;
-
-using FluentAssertions;
-
-using Flurl;
-
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-
+﻿using System.Net;
 using Draft.Exceptions;
-
+using FluentAssertions;
+using Flurl;
 using Flurl.Http.Testing;
-
 using Xunit;
 
 namespace Draft.Tests.Cluster
@@ -51,7 +41,7 @@ namespace Draft.Tests.Cluster
         }
 
         [Fact]
-        public void ShouldThrowExistingPeerAddressExceptionOnDuplicatePeerAddress()
+        public async Task ShouldThrowExistingPeerAddressExceptionOnDuplicatePeerAddress()
         {
             using (var http = new HttpTest())
             {
@@ -65,8 +55,8 @@ namespace Draft.Tests.Cluster
                               .WithPeerUri(Fixtures.EtcdUrl.ToUri());
                 };
 
-                action.ShouldThrowExactly<ExistingPeerAddressException>()
-                      .And
+                var exception = await Record.ExceptionAsync(action);
+                Assert.IsType<ExistingPeerAddressException>(exception)
                       .IsExistingPeerAddress.Should().BeTrue();
             }
         }

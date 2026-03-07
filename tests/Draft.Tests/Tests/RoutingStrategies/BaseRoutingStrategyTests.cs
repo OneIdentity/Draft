@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Endpoints;
+﻿using Draft.Endpoints;
 
 namespace Draft.Tests.RoutingStrategies
 {
@@ -25,11 +22,11 @@ namespace Draft.Tests.RoutingStrategies
             return new Endpoint(new Uri(url), ea);
         }
 
-        protected EndpointPool CreateSut(EndpointRoutingStrategy strategy = null, params Endpoint[] endpoints)
+        protected EndpointPool CreateSut(EndpointRoutingStrategy? strategy = null, params Endpoint[] endpoints)
         {
             return new EndpointPool(
                 endpoints == null || !endpoints.Any()
-                    ? new[] {Endpoint1, Endpoint2, Endpoint3, Endpoint4, Endpoint5}
+                    ? new[] { Endpoint1, Endpoint2, Endpoint3, Endpoint4, Endpoint5 }
                     : endpoints,
                 strategy ?? RoutingStrategy
                 );

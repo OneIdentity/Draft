@@ -24,10 +24,7 @@ namespace Draft.Endpoints
         internal List<Endpoint> AllEndpoints { get; private set; }
 
         [IgnoreDataMember]
-        internal Endpoint[] OnlineEndpoints
-        {
-            get { return AllEndpoints.Where(x => x.IsOnline).ToArray(); }
-        }
+        internal Endpoint[] OnlineEndpoints => AllEndpoints.Where(x => x.IsOnline).ToArray();
 
         [DataMember(Order = 2)]
         internal EndpointRoutingStrategy RoutingStrategy { get; private set; }

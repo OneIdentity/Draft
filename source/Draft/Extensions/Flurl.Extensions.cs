@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Flurl;
+﻿using Flurl;
 using Flurl.Http;
+using System;
+using System.Threading.Tasks;
 
 namespace Draft
 {
@@ -16,17 +13,17 @@ namespace Draft
             return This.ToString();
         }
 
-        public static Url Conditionally(this Url This, bool predicate, Func<Url, Url> action)
+        public static IFlurlRequest Conditionally(this IFlurlRequest This, bool predicate, Func<IFlurlRequest, IFlurlRequest> action)
         {
             return predicate ? action(This) : This;
         }
 
         public static IFlurlClient Conditionally(this Url This, bool predicate, Func<Url, IFlurlClient> action)
         {
-            return predicate ? action(This) : new FlurlClient(This, true);
+            return predicate ? action(This) : new FlurlClient(This);
         }
 
-        public static Task<HttpResponseMessage> Conditionally(this Url This, bool predicate, object data, Func<Url, object, Task<HttpResponseMessage>> ifTrue, Func<Url, object, Task<HttpResponseMessage>> ifFalse)
+        public static Task<IFlurlResponse> Conditionally(this Url This, bool predicate, object data, Func<Url, object, Task<IFlurlResponse>> ifTrue, Func<Url, object, Task<IFlurlResponse>> ifFalse)
         {
             return predicate ? ifTrue(This, data) : ifFalse(This, data);
         }

@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using Draft.Responses;
 
-using System.Linq;
-
 using Newtonsoft.Json;
 
 namespace Draft.Json
@@ -22,7 +20,7 @@ namespace Draft.Json
                 : nullableType;
 
             return t.IsEnum
-                   && t == typeof (EtcdErrorCode);
+                   && t == typeof(EtcdErrorCode);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -53,7 +51,7 @@ namespace Draft.Json
                 return;
             }
 
-            var code = (EtcdErrorCode) value;
+            var code = (EtcdErrorCode)value;
 
             writer.WriteValue(code.RawValue());
         }

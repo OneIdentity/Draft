@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Draft.Endpoints;
+﻿using Draft.Endpoints;
 
 using FluentAssertions;
 
@@ -15,7 +11,7 @@ namespace Draft.Tests.RoutingStrategies
 
         private Endpoint[] Endpoints
         {
-            get { return new[] {Endpoint1, Endpoint2, Endpoint3, Endpoint4, Endpoint5}; }
+            get { return new[] { Endpoint1, Endpoint2, Endpoint3, Endpoint4, Endpoint5 }; }
         }
 
         protected override EndpointRoutingStrategy RoutingStrategy

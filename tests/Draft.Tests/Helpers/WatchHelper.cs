@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-
-namespace Draft.Tests
+﻿namespace Draft.Tests
 {
     public class WatchHelper<T>
     {

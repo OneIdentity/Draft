@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Flurl.Http;
-
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Draft.Endpoints;
 using Draft.Responses.Cluster;
+using Flurl.Http;
 
 namespace Draft.Requests.Cluster
 {
     internal class UpdateMemberPeerUrlsRequest : BaseRequest, IUpdateMemberPeerUrlsRequest
     {
 
-        public UpdateMemberPeerUrlsRequest(IEtcdClient etcdClient, EndpointPool endpointPool, params string[] pathParts) 
+        public UpdateMemberPeerUrlsRequest(IEtcdClient etcdClient, EndpointPool endpointPool, params string[] pathParts)
             : base(etcdClient, endpointPool, pathParts)
         {
             Uris = new List<Uri>();
         }
 
-        public string MemberId { get; private set; }
+        public string MemberId { get; private set; } = string.Empty;
 
         public List<Uri> Uris { get; private set; }
 
@@ -40,7 +37,7 @@ namespace Draft.Requests.Cluster
             }
             catch (FlurlHttpException e)
             {
-                throw e.ProcessException();
+                throw await e.ProcessException();
             }
         }
 

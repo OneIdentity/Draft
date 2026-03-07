@@ -1,10 +1,6 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoFixture;
 using Newtonsoft.Json;
-
-using Ploeh.AutoFixture;
 
 namespace Draft.Tests
 {
@@ -19,7 +15,7 @@ namespace Draft.Tests
 
             public const string Json_SimpleDataContract_Name = "Draft";
 
-            public static SimpleDataContractDto SimpleDataContract(int? id = null, string name = null)
+            public static SimpleDataContractDto SimpleDataContract(int? id = null, string? name = null)
             {
                 return new SimpleDataContractDto
                 {

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Responses
+﻿namespace Draft.Responses
 {
     internal class ResponseHeaders : IResponseHeaders
     {
 
-        public string ClusterId { get; set; }
+        public string ClusterId { get; set; } = string.Empty;
 
         public long? CurrentIndex { get; set; }
 
