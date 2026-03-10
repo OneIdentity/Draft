@@ -1,17 +1,7 @@
-﻿using System;
-
+﻿using Draft.Responses.Statistics;
 using FluentAssertions;
-
 using Flurl;
-
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Draft.Responses.Statistics;
-
 using Flurl.Http.Testing;
-
 using Xunit;
 
 namespace Draft.Tests.Statistics

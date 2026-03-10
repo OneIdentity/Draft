@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses.Cluster
@@ -8,8 +7,8 @@ namespace Draft.Responses.Cluster
     internal class ClusterMemberCollection
     {
 
-        [field : IgnoreDataMember]
-        private ClusterMember[] _members;
+        [field: IgnoreDataMember]
+        private ClusterMember[] _members = Array.Empty<ClusterMember>();
 
         [DataMember(Name = "members")]
         public ClusterMember[] Members

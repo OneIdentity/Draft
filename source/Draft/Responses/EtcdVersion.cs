@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Draft.Responses
 {
@@ -9,10 +7,10 @@ namespace Draft.Responses
     {
 
         [DataMember(Name = "releaseVersion")]
-        public string Internal { get; private set; }
+        public string Internal { get; private set; } = string.Empty;
 
         [DataMember(Name = "internalVersion")]
-        public string Release { get; private set; }
+        public string Release { get; private set; } = string.Empty;
 
     }
 }

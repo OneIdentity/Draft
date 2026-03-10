@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Responses
+﻿namespace Draft.Responses
 {
     /// <summary>
     ///     Etcd response for the Version operation

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 
 using Draft.Endpoints;
 using Draft.Exceptions;
@@ -22,7 +18,7 @@ namespace Draft.Tests.VerificationStrategies
 
         protected override Uri[] Uris
         {
-            get { return new[] {Uri1, Uri2, Uri3, Uri4, Uri5}; }
+            get { return new[] { Uri1, Uri2, Uri3, Uri4, Uri5 }; }
         }
 
         protected override EndpointVerificationStrategy VerificationStrategy
@@ -34,27 +30,9 @@ namespace Draft.Tests.VerificationStrategies
         [Fact]
         public void ShouldThrowExceptionWhenSomeEndpointsAreOffline()
         {
-            using (var http = InitializeInvalidHostHelper(
-                (xh, xr) =>
-                {
-                    if (xr.RequestUri.ToString().StartsWith(Uri3.ToString()))
-                    {
-                        throw new SocketException();
-                    }
-
-                    return xh.ResponseQueue.Any()
-                        ? xh.ResponseQueue.Dequeue()
-                        : new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent(string.Empty)
-                        };
-                }))
+            using (var http = new HttpTest())
             {
-                http.RespondWith("etc 1.2.3");
-                http.RespondWith("etc 1.2.3");
-                http.RespondWith("etc 1.2.3");
-                http.RespondWith("etc 1.2.3");
-                http.RespondWith("etc 1.2.3");
+                http.SimulateException(new SocketException());
 
                 Action action = () =>
                 {
@@ -70,7 +48,7 @@ namespace Draft.Tests.VerificationStrategies
                     }
                 };
 
-                action.ShouldThrow<InvalidHostException>();
+                action.Should().Throw<InvalidHostException>();
             }
         }
 

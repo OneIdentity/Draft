@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Configuration;
+﻿using Draft.Configuration;
 using Draft.Endpoints;
 using Draft.Requests;
 using Draft.Requests.Cluster;
 using Draft.Requests.Statistics;
+using System;
 
 namespace Draft
 {

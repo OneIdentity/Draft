@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Responses;
+﻿using Draft.Responses;
 
 namespace Draft
 {
@@ -18,7 +15,7 @@ namespace Draft
         {
             if (This == null)
             {
-                return default(T);
+                return default;
             }
 
             var value = This.RawValue;

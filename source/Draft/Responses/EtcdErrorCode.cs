@@ -182,7 +182,7 @@ namespace Draft.Responses
     internal static class EtcdErrorCodeMapping
     {
 
-        private static readonly Dictionary<int, EtcdErrorCode> Mapping = new Dictionary<int, EtcdErrorCode>(Enum.GetValues(typeof (EtcdErrorCode)).Length)
+        private static readonly Dictionary<int, EtcdErrorCode> Mapping = new Dictionary<int, EtcdErrorCode>(Enum.GetValues(typeof(EtcdErrorCode)).Length)
         {
             // Command related
             {Constants.Etcd.ErrorCode_KeyNotFound, EtcdErrorCode.KeyNotFound},
@@ -228,7 +228,7 @@ namespace Draft.Responses
 
         public static EtcdErrorCode? Map(this HttpStatusCode This)
         {
-            var code = (int) This;
+            var code = (int)This;
 
             if (This == HttpStatusCode.Conflict)
             {

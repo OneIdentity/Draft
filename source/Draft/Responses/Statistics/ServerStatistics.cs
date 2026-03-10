@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses.Statistics
@@ -15,25 +14,22 @@ namespace Draft.Responses.Statistics
         ///     The unique identifier for this server member
         /// </summary>
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         ///     Statistical information for this server member's leader
         /// </summary>
         [DataMember(Name = "leaderInfo")]
-        public LeaderInfo LeaderInfo { get; set; }
+        public LeaderInfo LeaderInfo { get; set; } = new LeaderInfo();
 
         [IgnoreDataMember]
-        ILeaderInfo IServerStatistics.LeaderInfo
-        {
-            get { return LeaderInfo; }
-        }
+        ILeaderInfo IServerStatistics.LeaderInfo => LeaderInfo;
 
         /// <summary>
         ///     The name for this server member
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         ///     Number of append requests this server member has processed

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Flurl;
+﻿using Flurl;
 using Flurl.Http.Testing;
 
 using Xunit;
@@ -179,7 +174,7 @@ namespace Draft.Tests.Keys
                             .AppendPathSegments(Constants.Etcd.Path_Keys, Fixtures.Key.Path)
                     )
                     .WithVerb(HttpMethod.Put)
-                    .WithRequestBody(Fixtures.Key.ExistingRequest(existing : false))
+                    .WithRequestBody(Fixtures.Key.ExistingRequest(existing: false))
                     .Times(1);
             }
         }

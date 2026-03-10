@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 using Flurl.Http;
@@ -12,14 +9,14 @@ namespace Draft.Tests.Assertions
     public abstract class BaseFluentAssertions
     {
 
-        protected BaseFluentAssertions(IList<HttpCall> calls)
+        protected BaseFluentAssertions(IReadOnlyList<FlurlCall> calls)
         {
             Calls = calls;
         }
 
-        protected IList<HttpCall> Calls { get; private set; }
+        protected IReadOnlyList<FlurlCall> Calls { get; private set; }
 
-        protected List<HttpCall> FilterCalls(Func<HttpCall, bool> filter)
+        protected List<FlurlCall> FilterCalls(Func<FlurlCall, bool> filter)
         {
             return Calls.Where(filter).ToList();
         }
@@ -30,9 +27,9 @@ namespace Draft.Tests.Assertions
             return Regex.IsMatch(toCheck, regex);
         }
 
-        protected string FirstRequestAbsoluteUri
+        protected string? FirstRequestAbsoluteUri
         {
-            get { return Calls.Select(x => x.Request.RequestUri.AbsoluteUri).FirstOrDefault(); }
+            get { return Calls.Select(x => x.HttpRequestMessage.RequestUri?.AbsoluteUri).FirstOrDefault(); }
         }
 
     }

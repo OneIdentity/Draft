@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses
@@ -8,10 +7,10 @@ namespace Draft.Responses
     internal class KeyData : IKeyData, IHaveAValueConverter
     {
 
-        private KeyData[] _children;
+        private KeyData[] _children = Array.Empty<KeyData>();
 
-        [field : IgnoreDataMember]
-        private Func<IKeyDataValueConverter> _valueConverter;
+        [field: IgnoreDataMember]
+        private Func<IKeyDataValueConverter> _valueConverter = () => Etcd.Configuration.ValueConverter;
 
         [DataMember(Name = "nodes")]
         public KeyData[] Children
@@ -37,10 +36,8 @@ namespace Draft.Responses
 
         [IgnoreDataMember]
         IKeyData[] IKeyData.Children
-        {
             // ReSharper disable once CoVariantArrayConversion
-            get { return Children; }
-        }
+            => Children;
 
         [DataMember(Name = "createdIndex")]
         public long CreatedIndex { get; private set; }
@@ -52,13 +49,13 @@ namespace Draft.Responses
         public bool IsDir { get; private set; }
 
         [DataMember(Name = "key")]
-        public string Key { get; private set; }
+        public string Key { get; private set; } = string.Empty;
 
         [DataMember(Name = "modifiedIndex")]
         public long? ModifiedIndex { get; private set; }
 
         [DataMember(Name = "value")]
-        public string RawValue { get; private set; }
+        public string RawValue { get; private set; } = string.Empty;
 
         [DataMember(Name = "ttl")]
         public long? TtlSeconds { get; private set; }

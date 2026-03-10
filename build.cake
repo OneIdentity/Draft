@@ -1,5 +1,3 @@
-#tool "xunit.runner.console"
-
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,7 +93,7 @@ Task("Restore")
 	.Does(() =>
 {
 	Information("Restoring {0}", solution);
-	NuGetRestore(solution);
+	DotNetRestore(solution.FullPath);
 });
 
 Task("AssemblyInfo")
@@ -117,13 +115,10 @@ Task("Build")
 	.Does(() =>
 {
 	Information("Building {0}", solution);
-	MSBuild(solution, settings => settings
-        .SetConfiguration(configuration)
-        .SetVerbosity(Context.Log.Verbosity)
-        .SetMaxCpuCount(System.Environment.ProcessorCount)
-        .SetNodeReuse(false)
-        .WithProperty("UseSharedCompilation", "false")
-	);
+	DotNetBuild(solution.FullPath, new DotNetBuildSettings
+    {
+        Configuration = configuration
+    });
 });
 
 Task("UnitTests")
@@ -131,18 +126,10 @@ Task("UnitTests")
 {
     Information("Running Tests in {0}", solution);
 
-    var testAssemblies = GetFiles(testsDir + "/**/bin/" + configuration + "/**/*.Tests*.dll").ToList();
-    testAssemblies.ForEach(x => Information("Test File: {0}", x.GetFilename()));
-
-    XUnit2(
-        testAssemblies,
-        new XUnit2Settings {
-            OutputDirectory = testResultsDir,
-            HtmlReport = true,
-            NUnitReport = true,
-            XmlReport = true,
-        }
-    );
+    DotNetTest (solution.FullPath, new DotNetTestSettings
+    {
+        Configuration = configuration
+    });
 });
 
 Task("CreateNugetPackage")

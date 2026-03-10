@@ -1,14 +1,6 @@
-﻿using System;
-
+﻿using Draft.Endpoints;
 using FluentAssertions;
-
-using System.Linq;
-using System.Threading.Tasks;
-
-using Draft.Endpoints;
-
 using Flurl.Http.Testing;
-
 using Xunit;
 
 namespace Draft.Tests.VerificationStrategies
@@ -18,7 +10,7 @@ namespace Draft.Tests.VerificationStrategies
 
         protected override Uri[] Uris
         {
-            get { return new[] {Uri1, Uri2, Uri3, Uri4, Uri5}; }
+            get { return new[] { Uri1, Uri2, Uri3, Uri4, Uri5 }; }
         }
 
         protected override EndpointVerificationStrategy VerificationStrategy
@@ -37,7 +29,7 @@ namespace Draft.Tests.VerificationStrategies
                     .RespondWith("etcd 1.2.4")
                     .RespondWith("etcd 1.2.4");
 
-                BuildAndVerifyAction.ShouldNotThrow<Exception>();
+                Assert.Null(Record.Exception(BuildAndVerifyAction));
             }
         }
 

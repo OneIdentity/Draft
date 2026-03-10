@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Draft.Exceptions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Draft.Exceptions;
 
 namespace Draft.Endpoints
 {
@@ -105,10 +104,6 @@ namespace Draft.Endpoints
             /// <returns></returns>
             public Builder WithHttpReadTimeout(TimeSpan httpGetTimeout)
             {
-                if (httpGetTimeout == null)
-                {
-                    throw new ArgumentNullException(nameof(httpGetTimeout));
-                }
                 _httpGetTimeout = httpGetTimeout;
                 return this;
             }

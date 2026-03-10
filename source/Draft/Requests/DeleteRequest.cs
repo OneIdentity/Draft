@@ -1,13 +1,8 @@
-﻿using System;
-
-using Flurl.Http;
-
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Draft.Endpoints;
 using Draft.Responses;
+using Flurl.Http;
 
 namespace Draft.Requests
 {
@@ -28,7 +23,7 @@ namespace Draft.Requests
         {
             try
             {
-                return await TargetUrl
+                return await new FlurlRequest(TargetUrl)
                     .Conditionally(IsDirectory, x => x.SetQueryParam(Constants.Etcd.Parameter_Directory, Constants.Etcd.Parameter_True))
                     .Conditionally(IsDirectory && Recursive.HasValue && Recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                     .DeleteAsync()
@@ -36,7 +31,7 @@ namespace Draft.Requests
             }
             catch (FlurlHttpException e)
             {
-                throw e.ProcessException();
+                throw await e.ProcessException();
             }
         }
 

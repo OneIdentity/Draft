@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Configuration
+﻿namespace Draft.Configuration
 {
     internal sealed class ClientConfig : IMutableEtcdClientConfig
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Endpoints
+﻿namespace Draft.Endpoints
 {
     /// <summary>
     ///     Etcd endpoint availability indicators

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Responses
@@ -8,11 +7,11 @@ namespace Draft.Responses
     internal class KeyEvent : IKeyEvent, IHaveResponseHeaders, IHaveAValueConverter
     {
 
-        [field : IgnoreDataMember]
+        [field: IgnoreDataMember]
         private readonly ResponseHeaders _headers = new ResponseHeaders();
 
-        [field : IgnoreDataMember]
-        private Func<IKeyDataValueConverter> _valueConverter;
+        [field: IgnoreDataMember]
+        private Func<IKeyDataValueConverter> _valueConverter = () => Etcd.Configuration.ValueConverter;
 
         [DataMember(Name = "node")]
         public KeyData Data { get; private set; }
@@ -45,7 +44,7 @@ namespace Draft.Responses
             }
         }
 
-        [property : IgnoreDataMember]
+        [property: IgnoreDataMember]
         public ResponseHeaders Headers
         {
             get { return _headers; }
@@ -56,16 +55,10 @@ namespace Draft.Responses
         public KeyEventType Action { get; private set; }
 
         [IgnoreDataMember]
-        IKeyData IKeyEvent.Data
-        {
-            get { return Data; }
-        }
+        IKeyData IKeyEvent.Data => Data;
 
         [IgnoreDataMember]
-        IKeyData IKeyEvent.PreviousData
-        {
-            get { return PreviousData; }
-        }
+        IKeyData IKeyEvent.PreviousData => PreviousData;
 
     }
 }

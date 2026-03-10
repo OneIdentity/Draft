@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-
 using Draft.Exceptions;
 
 namespace Draft.Endpoints
@@ -16,10 +14,7 @@ namespace Draft.Endpoints
     {
 
         [IgnoreDataMember]
-        internal static EndpointVerificationStrategy Default
-        {
-            get { return None; }
-        }
+        internal static EndpointVerificationStrategy Default => None;
 
         /// <summary>
         ///     Executes the strategy against the passed <see cref="IEnumerable{Uri}" /> endpoints.
@@ -46,37 +41,25 @@ namespace Draft.Endpoints
         ///     Verify all supplied endpoints are responding.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointVerificationStrategy All
-        {
-            get { return LazyAll.Value; }
-        }
+        public static EndpointVerificationStrategy All => LazyAll.Value;
 
         /// <summary>
         ///     Verify any supplied endpoints are responding.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointVerificationStrategy Any
-        {
-            get { return LazyAny.Value; }
-        }
+        public static EndpointVerificationStrategy Any => LazyAny.Value;
 
         /// <summary>
         ///     Similar verification as <see cref="Any" /> but also adds verified cluster members to the <see cref="EndpointPool" />.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointVerificationStrategy ClusterMembers
-        {
-            get { return LazyClusterMembers.Value; }
-        }
+        public static EndpointVerificationStrategy ClusterMembers => LazyClusterMembers.Value;
 
         /// <summary>
         ///     Doesn't do any endpoint verification.
         /// </summary>
         [IgnoreDataMember]
-        public static EndpointVerificationStrategy None
-        {
-            get { return LazyNone.Value; }
-        }
+        public static EndpointVerificationStrategy None => LazyNone.Value;
 
         #endregion
     }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace Draft.Exceptions
 {
@@ -15,26 +13,22 @@ namespace Draft.Exceptions
         /// <summary>
         ///     Initializes a new <see cref="IndexNotANumberException" /> instance.
         /// </summary>
-        public IndexNotANumberException() {}
+        public IndexNotANumberException() { }
 
         /// <summary>
         ///     Initializes a new <see cref="IndexNotANumberException" /> instance with a specified error message.
         /// </summary>
-        public IndexNotANumberException(string message) : base(message) {}
-        
+        public IndexNotANumberException(string message) : base(message) { }
+
         /// <summary>
         ///     Initializes a new <see cref="IndexNotANumberException" /> instance for use in BCL deserialization
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        protected IndexNotANumberException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected IndexNotANumberException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         /// <summary>
         ///     Indicates that this exception is due to etcd being unable to parse the passed index value as a number.
         /// </summary>
-        public override bool IsIndexNotANumber
-        {
-            get { return true; }
-        }
+        public override bool IsIndexNotANumber => true;
 
     }
 }

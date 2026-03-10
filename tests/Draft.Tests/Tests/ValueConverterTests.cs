@@ -1,12 +1,6 @@
-﻿using System;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Flurl;
-
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 using Flurl.Http.Testing;
 
@@ -49,9 +43,10 @@ namespace Draft.Tests
                 response.Data.RawValue.Should().NotBeNullOrWhiteSpace();
                 response.Data.RawValue.Should().Be(expected);
 
-                SimpleDataContractDto responseDto = null;
+                SimpleDataContractDto? responseDto = null;
                 Action getValue = () => responseDto = response.Data.GetValue<SimpleDataContractDto>();
-                getValue.ShouldNotThrow();
+
+                Assert.Null(Record.Exception(getValue));
 
                 responseDto.Should().NotBeNull();
 
@@ -87,9 +82,9 @@ namespace Draft.Tests
                 response.Data.RawValue.Should().NotBeNullOrWhiteSpace();
                 response.Data.RawValue.Should().Be(expected);
 
-                SimpleDataContractDto responseDto = null;
+                SimpleDataContractDto? responseDto = null;
                 Action getValue = () => responseDto = response.Data.GetValue<SimpleDataContractDto>(converter);
-                getValue.ShouldNotThrow();
+                Assert.Null(Record.Exception(getValue));
 
                 responseDto.Should().NotBeNull();
 

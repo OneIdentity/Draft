@@ -1,15 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-
-using Draft.Endpoints;
-
-using Flurl.Http;
-using Flurl.Http.Testing;
+﻿using Draft.Endpoints;
 
 namespace Draft.Tests.VerificationStrategies
 {
-    public abstract class BaseVerificationStrategyTests : IDisposable
+    public abstract class BaseVerificationStrategyTests
     {
 
         protected static readonly Uri Uri1 = new Uri("http://localhost:1");
@@ -38,27 +31,10 @@ namespace Draft.Tests.VerificationStrategies
 
         protected abstract EndpointVerificationStrategy VerificationStrategy { get; }
 
-        public void Dispose()
-        {
-            ResetInvalidHostHelper();
-        }
-
-        protected EndpointPool.Builder CreateSut(EndpointVerificationStrategy strategy = null)
+        protected EndpointPool.Builder CreateSut(EndpointVerificationStrategy? strategy = null)
         {
             return EndpointPool.Build()
                                .WithVerificationStrategy(strategy ?? VerificationStrategy);
-        }
-
-        protected HttpTest InitializeInvalidHostHelper(Func<HttpTest, HttpRequestMessage, HttpResponseMessage> responseFactory = null)
-        {
-            var httpTest = new HttpTest();
-            FlurlHttp.Configure(x => { x.HttpClientFactory = new TestingHttpClientFactory(responseFactory); });
-            return httpTest;
-        }
-
-        protected void ResetInvalidHostHelper()
-        {
-            FlurlHttp.GlobalSettings.ResetDefaults();
         }
 
     }

@@ -1,12 +1,6 @@
-﻿using System;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Flurl;
-
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 using Flurl.Http.Testing;
 

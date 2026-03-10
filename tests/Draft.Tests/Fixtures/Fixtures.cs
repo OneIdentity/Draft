@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Ploeh.AutoFixture;
+﻿using AutoFixture;
 
 namespace Draft.Tests
 {
@@ -14,11 +11,11 @@ namespace Draft.Tests
 
         private static readonly Fixture Fixture = new Fixture();
 
-        public static object CreateErrorMessage(int? errorCode = null, string message = null, string cause = null, long? index = null)
+        public static object CreateErrorMessage(int? errorCode = null, string? message = null, string? cause = null, long? index = null)
         {
             return new FormBodyBuilder()
                 // ReSharper disable once PossibleInvalidOperationException
-                .Add(errorCode.HasValue, "errorCode", () => errorCode.Value)
+                .Add(errorCode.HasValue, "errorCode", () => errorCode!.Value)
                 .Add(message != null, "message", () => message)
                 .Add(cause != null, "cause", () => cause)
                 .Add("index", index ?? Fixture.Create<long>())

@@ -1,8 +1,4 @@
-﻿using System;
-
-using FluentAssertions;
-
-using System.Linq;
+﻿using FluentAssertions;
 
 using Xunit;
 
@@ -36,7 +32,7 @@ namespace Draft.Tests
             // Act
             Etcd.Configure(x => x.ValueConverter = Converters.String);
 
-            var client = (EtcdClient) Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
+            var client = (EtcdClient)Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
 
 
             // Verify
@@ -67,7 +63,7 @@ namespace Draft.Tests
                 .Should()
                 .Be(Converters.Json);
 
-            var client = (EtcdClient) Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
+            var client = (EtcdClient)Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
 
             client.Configure(x => x.ValueConverter = Converters.String);
 
@@ -84,7 +80,7 @@ namespace Draft.Tests
                 .Should()
                 .Be(Converters.Json);
 
-            var client = (EtcdClient) Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
+            var client = (EtcdClient)Etcd.ClientFor(Fixtures.EtcdUrl.ToUri());
 
             client.Configure(x => x.ValueConverter = Converters.String);
 

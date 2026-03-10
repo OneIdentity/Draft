@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Responses.Statistics
+﻿namespace Draft.Responses.Statistics
 {
     /// <summary>
     ///     Various statistics about a follower in an etcd cluster

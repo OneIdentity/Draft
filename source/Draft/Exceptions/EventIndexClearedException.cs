@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace Draft.Exceptions
 {
@@ -15,26 +13,22 @@ namespace Draft.Exceptions
         /// <summary>
         ///     Initializes a new <see cref="EventIndexClearedException" /> instance.
         /// </summary>
-        public EventIndexClearedException() {}
+        public EventIndexClearedException() { }
 
         /// <summary>
         ///     Initializes a new <see cref="EventIndexClearedException" /> instance with a specified error message.
         /// </summary>
-        public EventIndexClearedException(string message) : base(message) {}
+        public EventIndexClearedException(string message) : base(message) { }
 
         /// <summary>
         ///     Initializes a new <see cref="EventIndexClearedException" /> instance for use in BCL deserialization
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        protected EventIndexClearedException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected EventIndexClearedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         /// <summary>
         ///     Indicates that this exception is due to the event in the requested index is outdated and cleared.
         /// </summary>
-        public override bool IsEventIndexCleared
-        {
-            get { return true; }
-        }
+        public override bool IsEventIndexCleared => true;
 
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Draft.Responses;
+﻿using Draft.Responses;
 using Draft.ValueConverters;
 
 namespace Draft
@@ -30,18 +27,12 @@ namespace Draft
         /// <summary>
         ///     Json based converter.
         /// </summary>
-        public static IKeyDataValueConverter Json
-        {
-            get { return JsonConverter; }
-        }
+        public static IKeyDataValueConverter Json => JsonConverter;
 
         /// <summary>
         ///     String based converter.
         /// </summary>
-        public static IKeyDataValueConverter String
-        {
-            get { return StringConverter; }
-        }
+        public static IKeyDataValueConverter String => StringConverter;
 
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Draft.Tests
+﻿namespace Draft.Tests
 {
     internal static partial class Fixtures
     {
@@ -26,7 +23,7 @@ namespace Draft.Tests
                 };
             }
 
-            public static object ClusterMemberResponse(Uri[] clientUris = null, Uri[] peerUris = null)
+            public static object ClusterMemberResponse(Uri[]? clientUris = null, Uri[]? peerUris = null)
             {
                 return new
                 {

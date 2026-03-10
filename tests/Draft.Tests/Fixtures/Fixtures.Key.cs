@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Ploeh.AutoFixture;
+﻿using AutoFixture;
 
 namespace Draft.Tests
 {
@@ -47,7 +44,7 @@ namespace Draft.Tests
                 return TtlRequest(value, Convert.ToInt64(ttlValue.TotalSeconds));
             }
 
-            public static object UpsertResponse(string keyPath, string value, string previousValue = null)
+            public static object UpsertResponse(string keyPath, string value, string? previousValue = null)
             {
                 var hasPreviousValue = !string.IsNullOrWhiteSpace(previousValue);
                 var modifiedIndex = Fixture.Create<long>();

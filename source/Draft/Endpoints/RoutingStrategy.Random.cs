@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Draft.Endpoints
@@ -11,7 +10,7 @@ namespace Draft.Endpoints
         [NonSerialized, IgnoreDataMember]
         private IRandom _random;
 
-        public RoutingStrategyRandom() : this(StaticRandom.Instance) {}
+        public RoutingStrategyRandom() : this(StaticRandom.Instance) { }
 
         public RoutingStrategyRandom(IRandom random)
         {

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-
-using Draft.Configuration;
+﻿using Draft.Configuration;
 using Draft.Endpoints;
 using Draft.Requests;
 using Draft.Requests.Cluster;
 using Draft.Requests.Statistics;
+using System;
+using System.Threading;
 
 namespace Draft
 {
@@ -23,15 +21,9 @@ namespace Draft
             _clientConfig = clientConfig ?? new ClientConfig();
         }
 
-        public IMutableEtcdClientConfig Config
-        {
-            get { return _clientConfig; }
-        }
+        public IMutableEtcdClientConfig Config => _clientConfig;
 
-        IEtcdClientConfig IEtcdClient.Config
-        {
-            get { return Config; }
-        }
+        IEtcdClientConfig IEtcdClient.Config => Config;
 
         public EndpointPool EndpointPool { get; private set; }
 
@@ -110,10 +102,7 @@ namespace Draft
 
         #region IAtomicEtcd Client
 
-        public IAtomicEtcdClient Atomic
-        {
-            get { return this; }
-        }
+        public IAtomicEtcdClient Atomic => this;
 
         public ICompareAndDeleteRequest CompareAndDelete(string key)
         {
@@ -137,10 +126,7 @@ namespace Draft
 
         #region IClusterEtcd Client
 
-        public IClusterEtcdClient Cluster
-        {
-            get { return this; }
-        }
+        public IClusterEtcdClient Cluster => this;
 
         public ICreateMemberRequest CreateMember()
         {
@@ -176,10 +162,7 @@ namespace Draft
 
         #region IStatisticsEtcd Client
 
-        public IStatisticsEtcdClient Statistics
-        {
-            get { return this; }
-        }
+        public IStatisticsEtcdClient Statistics => this;
 
         public IGetLeaderStatisticsRequest GetLeaderStatistics()
         {
