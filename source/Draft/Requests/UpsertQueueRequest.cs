@@ -63,7 +63,7 @@ namespace Draft.Requests
 
             try
             {
-                return await TargetUrl
+                return await GetRequest()
                     .Conditionally(IsQueue, values, (x, v) => x.PostUrlEncodedAsync(v), (x, v) => x.SendUrlEncodedAsync(HttpMethod.Put, v))
                     .ReceiveEtcdResponse<KeyEvent>(EtcdClient);
             }

@@ -31,7 +31,7 @@ namespace Draft.Requests.Cluster
 
             try
             {
-                return await TargetUrl
+                return await GetRequest()
                     .PostJsonAsync(values)
                     .ReceiveJson<ClusterMember>();
             }

@@ -21,7 +21,7 @@ namespace Draft.Requests
         {
             try
             {
-                return await new FlurlRequest(TargetUrl)
+                return await GetRequest()
                     .Conditionally(Quorum.HasValue && Quorum.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Quorum, Constants.Etcd.Parameter_True))
                     .Conditionally(Recursive.HasValue && Recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                     .Conditionally(HttpGetTimeout != null, x => x.WithTimeout(HttpGetTimeout.GetValueOrDefault()))

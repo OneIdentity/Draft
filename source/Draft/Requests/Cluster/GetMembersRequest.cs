@@ -16,7 +16,7 @@ namespace Draft.Requests.Cluster
         {
             try
             {
-                var collection = await TargetUrl
+                var collection = await GetRequest()
                     .GetAsync()
                     .ReceiveJson<ClusterMemberCollection>();
 

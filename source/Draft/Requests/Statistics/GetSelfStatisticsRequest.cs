@@ -4,6 +4,7 @@ using Draft.Endpoints;
 using Draft.Responses.Statistics;
 
 using Flurl.Http;
+using Flurl.Http.Configuration;
 
 namespace Draft.Requests.Statistics
 {
@@ -16,7 +17,7 @@ namespace Draft.Requests.Statistics
         {
             try
             {
-                return await TargetUrl
+                return await GetRequest()
                     .GetAsync()
                     .ReceiveJson<ServerStatistics>();
             }

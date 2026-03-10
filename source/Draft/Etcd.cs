@@ -9,8 +9,9 @@ using System.Runtime.ExceptionServices;
 using Draft.Configuration;
 using Draft.Endpoints;
 using Draft.Json;
-
+using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
 using Flurl.Http.Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -34,22 +35,24 @@ namespace Draft
 
         static Etcd()
         {
-
             JsonSettings = new JsonSerializerSettings();
             JsonSettings.Converters = JsonSettings.Converters ?? new List<JsonConverter>();
             JsonSettings.Converters.Add(new EtcdErrorCodeConverter());
             JsonSettings.Converters.Add(new StringEnumConverter { AllowIntegerValues = true });
             JsonConvert.DefaultSettings = () => JsonSettings;
+        }
 
-            FlurlHttp.Clients.WithDefaults(builder =>
-            {
-                builder.EventHandlers.Add((FlurlEventType.BeforeCall, new EtcdHeaderEventHandler()));
-                builder.WithSettings(settings =>
-                    {
-                        settings.JsonSerializer = new NewtonsoftJsonSerializer(JsonSettings);
-                    });
+        public static IFlurlClient ToClient(this Url This)
+        {
+            var builder = new FlurlClientBuilder(This)
+                .WithSettings(settings =>
+                {
+                    settings.JsonSerializer = new NewtonsoftJsonSerializer(JsonSettings);
+                });
 
-            });
+            builder.EventHandlers.Add((FlurlEventType.BeforeCall, new EtcdHeaderEventHandler()));
+
+            return builder.Build();
         }
 
         /// <summary>

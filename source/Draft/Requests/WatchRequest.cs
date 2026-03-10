@@ -50,8 +50,9 @@ namespace Draft.Requests
 
         private Task<IFlurlResponse> CallEndpoint(bool? recursive, long? index)
         {
-            FlurlRequest flurlRequest = new FlurlRequest(EndpointPool.GetEndpointUrl(PathParts).SetQueryParam(Constants.Etcd.Parameter_Wait, Constants.Etcd.Parameter_True));
-            return flurlRequest
+            var url = EndpointPool.GetEndpointUrl(PathParts).SetQueryParam(Constants.Etcd.Parameter_Wait, Constants.Etcd.Parameter_True);
+
+            return url.ToClient().Request()
                 .Conditionally(recursive.HasValue && recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                 // ReSharper disable once PossibleInvalidOperationException
                 .Conditionally(index.HasValue, x => x.SetQueryParam(Constants.Etcd.Parameter_WaitIndex, index.Value))

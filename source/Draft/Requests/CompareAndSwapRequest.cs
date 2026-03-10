@@ -87,7 +87,7 @@ namespace Draft.Requests
 
             try
             {
-                return await new FlurlRequest(TargetUrl)
+                return await GetRequest()
                     .Conditionally(isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevValue, ExpectedValue))
                     .Conditionally(!isByValue, x => x.SetQueryParam(Constants.Etcd.Parameter_PrevIndex, ExpectedIndex))
                     .SendUrlEncodedAsync(HttpMethod.Put, values)

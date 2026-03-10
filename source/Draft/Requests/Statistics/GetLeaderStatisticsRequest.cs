@@ -15,7 +15,7 @@ namespace Draft.Requests.Statistics
         {
             try
             {
-                return await TargetUrl
+                return await GetRequest()
                     .GetAsync()
                     .ReceiveJson<LeaderStatistics>();
             }

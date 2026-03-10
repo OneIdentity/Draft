@@ -1,6 +1,7 @@
 ﻿using Draft.Endpoints;
 
 using Flurl;
+using Flurl.Http;
 using System;
 
 namespace Draft.Requests
@@ -24,5 +25,10 @@ namespace Draft.Requests
         public Url TargetUrl => _endpointPool.GetEndpointUrl(_pathParts);
 
         protected TimeSpan? EndpointPoolHttpTimeout => _endpointPool.HttpGetTimeout;
+
+        public IFlurlRequest GetRequest()
+        {
+            return TargetUrl.ToClient().Request();
+        }
     }
 }

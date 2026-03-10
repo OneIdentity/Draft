@@ -30,7 +30,7 @@ namespace Draft.Requests.Cluster
 
             try
             {
-                return await TargetUrl
+                return await GetRequest()
                     .AppendPathSegment(MemberId)
                     .PutJsonAsync(values)
                     .ReceiveJson<ClusterMember>();

@@ -23,7 +23,7 @@ namespace Draft.Requests
         {
             try
             {
-                return await new FlurlRequest(TargetUrl)
+                return await GetRequest()
                     .Conditionally(IsDirectory, x => x.SetQueryParam(Constants.Etcd.Parameter_Directory, Constants.Etcd.Parameter_True))
                     .Conditionally(IsDirectory && Recursive.HasValue && Recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                     .DeleteAsync()
