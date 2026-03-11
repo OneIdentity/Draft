@@ -32,6 +32,7 @@ namespace Draft
         internal static readonly Lazy<ClientConfig> ClientConfig = new Lazy<ClientConfig>(() => new ClientConfig());
 
         internal static readonly JsonSerializerSettings JsonSettings;
+        internal static readonly IFlurlClientCache FlurlClientCache;
 
         static Etcd()
         {
@@ -40,19 +41,18 @@ namespace Draft
             JsonSettings.Converters.Add(new EtcdErrorCodeConverter());
             JsonSettings.Converters.Add(new StringEnumConverter { AllowIntegerValues = true });
             JsonConvert.DefaultSettings = () => JsonSettings;
+
+            FlurlClientCache = new FlurlClientCache()
+                .UseNewtonsoft(JsonSettings)
+                .WithDefaults(builder =>
+                {
+                    builder.EventHandlers.Add((FlurlEventType.BeforeCall, new EtcdHeaderEventHandler()));
+                });
         }
 
-        public static IFlurlClient ToClient(this Url This)
+        public static IFlurlRequest ToRequest(this Url This)
         {
-            var builder = new FlurlClientBuilder(This)
-                .WithSettings(settings =>
-                {
-                    settings.JsonSerializer = new NewtonsoftJsonSerializer(JsonSettings);
-                });
-
-            builder.EventHandlers.Add((FlurlEventType.BeforeCall, new EtcdHeaderEventHandler()));
-
-            return builder.Build();
+            return FlurlClientCache.GetOrAdd(This.Host, This).Request(This);
         }
 
         /// <summary>

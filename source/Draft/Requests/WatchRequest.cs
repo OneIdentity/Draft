@@ -52,7 +52,7 @@ namespace Draft.Requests
         {
             var url = EndpointPool.GetEndpointUrl(PathParts).SetQueryParam(Constants.Etcd.Parameter_Wait, Constants.Etcd.Parameter_True);
 
-            return url.ToClient().Request()
+            return url.ToRequest()
                 .Conditionally(recursive.HasValue && recursive.Value, x => x.SetQueryParam(Constants.Etcd.Parameter_Recursive, Constants.Etcd.Parameter_True))
                 // ReSharper disable once PossibleInvalidOperationException
                 .Conditionally(index.HasValue, x => x.SetQueryParam(Constants.Etcd.Parameter_WaitIndex, index.Value))

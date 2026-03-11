@@ -28,7 +28,7 @@ namespace Draft.Requests
 
         public IFlurlRequest GetRequest()
         {
-            return TargetUrl.ToClient().Request();
+            return TargetUrl.ToRequest();
         }
     }
 }
